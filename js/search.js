@@ -14,17 +14,18 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
 
   var SCALE = 1;
   var GW = 140 * SCALE, MARGIN = 1 * SCALE, GH = GW / 1.618 * SCALE, CELLS = 9;
-  
+
   my.WIDTH = (GW + MARGIN) * CELLS - MARGIN,
   my.HEIGHT = (GH + MARGIN) * CELLS - MARGIN;
 
-  var x = d3.scale.linear().range([0, my.WIDTH]);
-  var y = d3.scale.linear().range([0, my.HEIGHT]);
+  my.x = d3.scale.linear().range([0, my.WIDTH]);
+  my.y = d3.scale.linear().range([0, my.HEIGHT]);
 
   var IMG_WIDTH = 32 * SCALE, IMG_HEIGHT = 40 * SCALE;
 
-  var svg, g_nodes, g_links;
-  var zoom_behavior, current_translate;
+  var svg, g_nodes;
+
+  var visibleRect;
 
   my.screenToClient = function(x, y) {
     var pt = svg.node().createSVGPoint();
@@ -76,10 +77,12 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
     return svg.node().getIntersectionList(rect, svg.node());
   };
 
-  var visibleRect;
+  _.templateSettings = {
+    interpolate : /\{\{(.+?)\}\}/g
+  };
 
   /* Return an array of the data of nodes that intersect the screen rect */
-  var visibleData = function() {
+  my.visibleData = function() {
     if (!visibleRect) {
         visibleRect = svg.node().createSVGRect();
         visibleRect.x = 30;
@@ -87,24 +90,12 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
     }
     visibleRect.width = window.innerWidth - 60;
     visibleRect.height = window.innerHeight - 60;
+
     var visibleNodes = svg.node().getIntersectionList(visibleRect, svg.node());
     return $(visibleNodes).closest(".node").map(function(i, node) {
         return d3.select(node).datum();
       }).get();
   };
-
-  _.templateSettings = {
-    interpolate : /\{\{(.+?)\}\}/g
-  };
-
-  /** Eventstream that enriches with visibility info */
-  Intercom.contentZooms.plug(Intercom.zooms.debounce(300).map(function(scale) {
-    return {
-      scale: scale,
-      contentScale: Math.max(Math.min(1 - scale / 8, 1.2), 0.4),
-      visible: visibleData()
-    };
-  }));
 
   my.startpos = function() {
     return {
@@ -129,45 +120,26 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
     gradient.append("stop").attr("stop-color", "rgb(154, 230, 46)").attr("offset","100%");
 
     g_nodes = svg.append("g").attr("class", "nodes");
-    g_links = g_nodes.append("g").attr("class", "links");
 
     grid({ x: 0, y: 0, width: my.WIDTH, height: my.HEIGHT }, MARGIN, "grid");
-
-    /*
-    var helpG = svg.append("g").attr("transform", "translate(40,40)");
-    helpG.append("rect")
-         .attr("width", WIDTH - 80).attr("height", 40).attr("class", "helpbar");
-    helpG.append("text").attr("y", 30).attr("class", "helptext").text("Use menubar to search.");
-   */
-
-    zoom_behavior = d3.behavior.zoom();
-    // FIXME: my.zooms could be created directly from this event source
-    svg.call(zoom_behavior.x(x).y(y).on("zoom", function() {
-      if (current_translate) return; // dragging...
-
-      g_nodes.attr("transform", 
-                 "translate(" + d3.event.translate[0] + "," + d3.event.translate[1] + ") "
-                 + "scale(" + d3.event.scale + ")");
-
-      Intercom.zooms.push(d3.event.scale);
-    }));
-
-    Intercom.drags.onValue(function(d) {
-      if (d.op === 'start') {
-        current_translate = [ zoom_behavior.translate()[0], zoom_behavior.translate()[1] ];
-      }
-      else if (d.op === 'end') {
-        zoom_behavior.translate(current_translate);
-        current_translate = null;
-      }
-    });
   };
+
+  my.svg_call = function(f) {
+    return svg.call(f);
+  };
+
+  Intercom.zooms.onValue(function(event) {
+    g_nodes.attr("transform",
+               "translate(" + event.translate[0] + "," + event.translate[1] + ") "
+               + "scale(" + event.scale + ")");
+  });
 
   return my;
 }(SEARCHSPACE || {}, Intercom, d3, $, _, Bacon));
 
+SEARCHSPACE.create();
+
 $(function() {
   "use strict";
-  SEARCHSPACE.create();
 });
 
