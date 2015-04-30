@@ -8,10 +8,10 @@ var Zoom = (function (my, Intercom, SEARCHSPACE, d3, $, _, Bacon) {
   my.drags = new Bacon.Bus();
 
   /** Eventstream that enriches with visibility info */
-  Intercom.contentZooms.plug(Intercom.zooms.debounce(300).map(function(scale) {
+  Intercom.contentZooms.plug(Intercom.zooms.debounce(300).map(function(event) {
     return {
-      scale: scale,
-      contentScale: Math.max(Math.min(1 - scale / 8, 1.2), 0.4),
+      scale: event.scale,
+      contentScale: Math.max(Math.min(1 - event.scale / 8, 1.2), 0.4),
       visible: SEARCHSPACE.visibleData()
     };
   }));

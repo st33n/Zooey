@@ -4,7 +4,7 @@ var TextNodes = (function(my, SEARCHSPACE, Intercom, d3, Bacon) {
   var color = d3.scale.category20();
 
   var textnodes = [
-    { x: 640, y: 480, text: "I am a strange loop", group: 1 }
+    { x: 640, y: 480, text: "Enter the badger", group: 1 }
   ];
 
   var group = 0;
@@ -13,12 +13,33 @@ var TextNodes = (function(my, SEARCHSPACE, Intercom, d3, Bacon) {
     return d3.select("svg g.nodes").selectAll(".textnode");
   };
 
+  var textBox = function(gs, text, fill, color, radius) {
+    var t = gs.append("svg:text")
+        .style("font-size", "10px")
+        .attr("fill", color).text(text);
+    t.each(function(d, i) {
+      var tx = d3.select(this);
+      var bb = this.getBBox();
+      var tw = bb.width;
+      var th = bb.height;
+      tx.attr("x", - tw / 2).attr("y", 5);
+      d3.select(this.parentNode).insert("rect", "text")
+          .attr("x", - (tw + 10) / 2)
+          .attr("y", - (th / 2))
+          .attr("width", tw + 10)
+          .attr("height", th * 1.4)
+          .attr("rx", radius).attr("ry", radius)
+          .style("fill", fill);
+    });
+    return t;
+  };
+
   my.init = function() {
     var g = elements().data(textnodes)
         .enter().append("g").attr("class", "node textnode");
     g.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
-    SEARCHSPACE.textBox(g,
+    textBox(g,
         function(d) { return d.text; },
         function(d) { return color(d.group); },
         "white", 5);
@@ -28,11 +49,11 @@ var TextNodes = (function(my, SEARCHSPACE, Intercom, d3, Bacon) {
 
     Intercom.textnodes.push(textnodes);
   };
-
+/*
   Intercom.tickers.push(function() {
     elements().attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   });
-
+*/
   Intercom.contentZooms.onValue(function(zoom) {
     var nodes = d3.select("svg g.nodes");
 

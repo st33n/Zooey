@@ -34,27 +34,6 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
     return translated;
   };
 
-  my.textBox = function(gs, text, fill, color, radius) {
-    var t = gs.append("svg:text")
-        .style("font-size", 10 * SCALE + "px")
-        .attr("fill", color).text(text);
-    t.each(function(d, i) {
-      var tx = d3.select(this);
-      var bb = this.getBBox();
-      var tw = bb.width;
-      var th = bb.height;
-      tx.attr("x", - tw / 2).attr("y", 5 * SCALE);
-      d3.select(this.parentNode).insert("rect", "text")
-          .attr("x", - (tw + 10 * SCALE) / 2)
-          .attr("y", - (th / 2))
-          .attr("width", tw + 10 * SCALE)
-          .attr("height", th * 1.4)
-          .attr("rx", radius).attr("ry", radius)
-          .style("fill", fill);
-    });
-    return t;
-  };
-
   var grid = function(rect, gutter, c) {
     var dx = (rect.width - ((CELLS - 1) * gutter)) / CELLS;
     var dy = (rect.height - ((CELLS - 1) * gutter)) / CELLS;
@@ -107,8 +86,7 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
   my.drags = new Bacon.Bus();
 
   my.create = function() {
-    d3.selectAll("html,body,#main").attr("style", "height: 100%");
-    svg = d3.select("#main").append("svg").attr("style", "width: 100%; height: 100%");
+    svg = d3.select("#main").append("svg");
     var defs = svg.append("defs");
     defs.append("clipPath").attr("id", "circularPath")
       .attr("clipPathUnits", "objectBoundingBox")

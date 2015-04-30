@@ -9,9 +9,9 @@ var Intercom = (function (my, Bacon, _) {
 
   my.drags = new Bacon.Bus().log("drag->");
 
-  my.zooms = new Bacon.Bus();
+  my.zooms = new Bacon.Bus(); // .log("zoom->");
 
-  my.contentZooms = new Bacon.Bus();
+  my.contentZooms = new Bacon.Bus().log("c-zoom->");
 
   // List of listeners that are synchronously called on layout ticks
   my.tickers = [];

@@ -2,16 +2,43 @@
   <head>
     <title>Zooey</title>
     <style>
+      html, body, #main {
+        height: 100%;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+      }
       body {
         background-color: #eee;
       }
       .grid {
-        fill: white;
+        fill: #fefefe;
       }
       .highlight {
         fill: yellow;
       }
+      .story {
+        background: white;
+        border: 1px solid #ccc;
+        padding: 5px;
+      }
     </style>
+    <script id="story1" type="text/html">
+      <div class="story">
+        <h1>Alice in Wonderland</h1>
+        <h2>Chapter 1</h2>
+        <p>Alice was bored. This had not been a good day. She had lost so much
+        stuff down that silly hole in the ground, just by dropping it in there
+        and waiting for something cool to happen. But nothing did. Until
+        quite late in the day, when suddenly the head of a badger appeared, peeking
+        carefully out of the hole and in the general direction of Alice.
+        After a little while the badger seemed to have gathered enough confidence
+        to speak:
+        <quote>Quit jamming stuff down my hole in the ground!</quote>, the
+        badger exclaimed, much to Alice's dismay.</p>
+      </div>
+    </script>
   </head>
 
   <body>
@@ -25,6 +52,7 @@
     <script src="./js/search.js"></script>
     <script src="./js/zoom.js"></script>
     <script src="./js/textnodes.js"></script>
+    <script src="./js/foreign.js"></script>
   </body>
 
 </html>
