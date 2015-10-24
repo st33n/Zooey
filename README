@@ -1,0 +1,11 @@
+Zooey - experimental zoomable UI
+
+Bacon.js holds everything together via the Intercom module.
+
+foreign.js
+intercom.js - event busses for all inter-module interaction.
+model.js - the model, currently a static nested immutable.js hash
+search.js
+textnodes.js
+zoom.js - listens to zoom events and posts updates on visible elements
+

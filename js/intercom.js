@@ -1,7 +1,6 @@
 var Intercom = (function (my, Bacon, _) {
   "use strict";
 
-  // Items on this bus are lists of links
   my.textnodes = new Bacon.Bus().log("textnodes->");
 
   // Visual items updated are posted here - SVG DOM elements
@@ -11,7 +10,7 @@ var Intercom = (function (my, Bacon, _) {
 
   my.zooms = new Bacon.Bus(); // .log("zoom->");
 
-  my.contentZooms = new Bacon.Bus().log("c-zoom->");
+  my.visibleNodes = new Bacon.Bus().log("visibleNodes->");
 
   // List of listeners that are synchronously called on layout ticks
   my.tickers = [];

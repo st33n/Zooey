@@ -35,12 +35,13 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
   };
 
   var grid = function(rect, gutter, c) {
+    var layer = g_nodes.select("g.background_layer");
     var dx = (rect.width - ((CELLS - 1) * gutter)) / CELLS;
     var dy = (rect.height - ((CELLS - 1) * gutter)) / CELLS;
 
     for (var i = 0; i < CELLS; ++i) {
       for (var j = 0; j < CELLS; ++j) {
-        g_nodes.append("svg:rect")
+        layer.append("svg:rect")
           .attr("class", c + " " + c + "-" + i + "-" + j)
           .attr("x", rect.x + i * (dx + gutter))
           .attr("y", rect.y + j * (dy + gutter))
@@ -98,6 +99,9 @@ var SEARCHSPACE = (function (my, Intercom, d3, $, _, Bacon) {
     gradient.append("stop").attr("stop-color", "rgb(154, 230, 46)").attr("offset","100%");
 
     g_nodes = svg.append("g").attr("class", "nodes");
+    g_nodes.append("g").attr("class", "background_layer");
+    g_nodes.append("g").attr("class", "content_layer");
+    g_nodes.append("g").attr("class", "overlay_layer");
 
     grid({ x: 0, y: 0, width: my.WIDTH, height: my.HEIGHT }, MARGIN, "grid");
   };

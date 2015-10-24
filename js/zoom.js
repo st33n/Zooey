@@ -1,4 +1,4 @@
-var Zoom = (function (my, Intercom, SEARCHSPACE, d3, $, _, Bacon) {
+var Zoom = (function (my, Intercom, SEARCHSPACE, Model, d3, $, _, Bacon) {
   "use strict";
 
   var zoom_behavior = d3.behavior.zoom();
@@ -8,12 +8,11 @@ var Zoom = (function (my, Intercom, SEARCHSPACE, d3, $, _, Bacon) {
   my.drags = new Bacon.Bus();
 
   /** Eventstream that enriches with visibility info */
-  Intercom.contentZooms.plug(Intercom.zooms.debounce(300).map(function(event) {
-    return {
-      scale: event.scale,
-      contentScale: Math.max(Math.min(1 - event.scale / 8, 1.2), 0.4),
-      visible: SEARCHSPACE.visibleData()
-    };
+  Intercom.visibleNodes.plug(Intercom.zooms.debounce(300).map(function(event) {
+    return Model.nodes.filter(function(node) {
+      console.log(node, node.get("w"));
+      return node.get("w") > 10;
+    });
   }));
 
   // FIXME: my.zooms could be created directly from this event source
@@ -33,6 +32,6 @@ var Zoom = (function (my, Intercom, SEARCHSPACE, d3, $, _, Bacon) {
   });
 
   return my;
-}(Zoom || {}, Intercom, SEARCHSPACE, d3, $, _, Bacon));
+}(Zoom || {}, Intercom, SEARCHSPACE, Model, d3, $, _, Bacon));
 
 
