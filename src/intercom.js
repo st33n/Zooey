@@ -19,7 +19,7 @@ export const model = new Rx.ReplaySubject(1);
 textnodes.subscribe(e => { console.log("textnodes", e) });
 visual.subscribe(e => { console.log("visual", e) });
 drags.subscribe(e => { console.log("drags", e) });
-zooms.subscribe(e => { console.log("zooms", e) });
+zooms.debounce(100).subscribe(e => { console.log("zooms", e) });
 model.subscribe(e => { console.log("model", e) });
 visibleNodes.subscribe(e => { console.log("visibleNodes", e) })
 

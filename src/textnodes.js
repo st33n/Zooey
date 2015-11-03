@@ -4,9 +4,7 @@ const color = d3.scale.category20();
 
 let group = 0;
 
-let elements = function() {
-  return d3.select("svg g.nodes g.overlay_layer").selectAll(".textnode");
-};
+let elements = () => d3.select("svg g.nodes g.overlay_layer").selectAll(".textnode");
 
 let textBox = function(gs, text, fill, color, radius) {
   const t = gs.append("svg:text")

@@ -37622,6 +37622,10 @@ var _immutable = require('immutable');
 
 var _immutable2 = _interopRequireDefault(_immutable);
 
+var _rx = require('rx');
+
+var _rx2 = _interopRequireDefault(_rx);
+
 var _searchspace = require('./searchspace');
 
 var _textnodes = require('./textnodes');
@@ -37636,11 +37640,23 @@ _jquery2['default'](function () {
   var svg = _searchspace.create();
   _zoom.create(svg);
 
-  _intercom.model.onNext(_immutable2['default'].fromJS([{ x: 745, y: 500, w: 200, text: "Enter the badger", type: 'text' }, { x: 700, y: 500, w: 800, h: 600,
-    src: "file:./index.html", story: "#koan23", type: 'html' }]));
+  var m = _immutable2['default'].fromJS([{ x: 745, y: 500, w: 200, text: "Enter the badger", type: 'text' }, { x: 700, y: 500, w: 800, h: 600,
+    src: "file:./index.html", story: "#koan23", type: 'html' }]);
+  _intercom.model.onNext(m);
+
+  var nodeSource = _rx2['default'].Observable.timer(1000, 1000).map(function () {
+    return { x: Math.random() * 1024,
+      y: Math.random() * 800,
+      w: Math.random() * 350,
+      text: "A random text", type: 'text' };
+  });
+
+  nodeSource.withLatestFrom(_intercom.model, function (ns, m) {
+    return m.push(_immutable2['default'].fromJS(ns));
+  }).subscribe(_intercom.model);
 });
 
-},{"./foreign":7,"./intercom":9,"./searchspace":10,"./textnodes":11,"./zoom":12,"immutable":3,"jquery":4}],9:[function(require,module,exports){
+},{"./foreign":7,"./intercom":9,"./searchspace":10,"./textnodes":11,"./zoom":12,"immutable":3,"jquery":4,"rx":5}],9:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -37683,7 +37699,7 @@ visual.subscribe(function (e) {
 drags.subscribe(function (e) {
   console.log("drags", e);
 });
-zooms.subscribe(function (e) {
+zooms.debounce(100).subscribe(function (e) {
   console.log("zooms", e);
 });
 model.subscribe(function (e) {
