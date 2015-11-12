@@ -28,6 +28,7 @@ visibleNodes.subscribe(visibleNodes => {
     if (data.get("story")) {
       $(this).append(_.template($(data.get("story")).text(), data));
     }
+
     /*
     else if (data.get("wiki")) {
       $.getJSON("/wiki/" + data.get("wiki")).then(d => {
