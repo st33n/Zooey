@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Zoomable JS fun",
   "main": "index.js",
+  "repository": "git@github.com:st33n/Zooey.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +18,7 @@
     "grunt-babel": "^5.0.3",
     "grunt-browserify": "^4.0.1",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-nodemon": "^0.4.0",
     "load-grunt-tasks": "^3.3.0",
     "request": "^2.65.0"
   },
