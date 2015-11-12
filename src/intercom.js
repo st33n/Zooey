@@ -16,6 +16,9 @@ export const tickers = [];
 
 export const model = new Rx.ReplaySubject(1);
 
+// Push nodes here to have them added to the model
+export const nodeSource = new Rx.Subject();
+
 textnodes.subscribe(e => { console.log("textnodes", e) });
 visual.subscribe(e => { console.log("visual", e) });
 drags.subscribe(e => { console.log("drags", e) });

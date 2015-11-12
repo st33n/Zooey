@@ -12,7 +12,7 @@ Rx.Observable.combineLatest(
   zooms.debounce(300), model,
   function(zs, md) {
     return md.filter(function(node) {
-      return node.get("w") > 10;
+      return true; // node.get("w") > 10 || node.get("fontSize");
     });
   }).subscribe(visibleNodes);
 
@@ -20,6 +20,9 @@ export function create(svg) {
   let zb = zoom_behavior.x(x).y(y);
   zb.on("zoom", evt => { if (!current_translate) zooms.onNext(d3.event); });
   svg.call(zb);
+
+  // Initial zoom
+  zooms.onNext({ translate: [ 0, 0 ], scale: 1 });
 };
 
 drags.subscribe(function(d) {

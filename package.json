@@ -12,18 +12,20 @@
     "babel": "^5.8.29",
     "babelify": "^6.4.0",
     "browserify": "^11.2.0",
+    "express": "^4.13.3",
     "grunt": "^0.4.5",
     "grunt-babel": "^5.0.3",
     "grunt-browserify": "^4.0.1",
     "grunt-contrib-watch": "^0.6.1",
-    "load-grunt-tasks": "^3.3.0"
+    "load-grunt-tasks": "^3.3.0",
+    "request": "^2.65.0"
   },
   "dependencies": {
     "d3": "^3.5.6",
     "immutable": "^3.7.5",
     "jquery": "^2.1.4",
-    "jquery2": "^2.0.3",
     "rx": "^4.0.6",
+    "rx-jquery": "^1.1.7",
     "underscore": "^1.8.3"
   }
 }

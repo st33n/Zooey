@@ -6,12 +6,12 @@ let group = 0;
 
 let elements = () => d3.select("svg g.nodes g.overlay_layer").selectAll(".textnode");
 
-let textBox = function(gs, text, fill, color, radius) {
+let textBox = function(gs, text, fontSize, fill, color, radius) {
   const t = gs.append("svg:text")
-      .style("font-size", "10px")
+      .style("font-size", fontSize)
       .attr("fill", color).text(text);
   t.each(function(d, i) {
-    const tx = d3.select(this);
+    let tx = d3.select(this);
     const bb = this.getBBox();
     const tw = bb.width;
     const th = bb.height;
@@ -35,14 +35,13 @@ visibleNodes.subscribe(visibleNodes => {
       .attr("transform", d => "translate(" + d.get("x") + "," + d.get("y") + ")" );
 
   textBox(g,
-      function(d) { return d.get("text"); },
-      "yellow",
-      "black", 3);
+      d => d.get("text"), d => d.get("fontSize") || "10px",
+      "yellow", "black", 3);
 
   g.append("title").text(d => d.get("text"));
 });
 
-zooms.subscribe(function(event) {
+zooms.subscribe(event => {
   let op = (24 - (event.scale - 6)) / 24;
   if (op > 1) op = 1;
   if (op < 0) op = 0;
