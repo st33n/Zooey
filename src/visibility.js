@@ -1,12 +1,9 @@
-import Rx from 'rx';
-import { zooms, models, visibleNodes } from './intercom';
+import Rx from 'rx'
+import { zooms, state$, visibleNodes } from './intercom'
 
 /* Combine zooms and model changes to produce an event stream of visibleNodes */
 Rx.Observable.combineLatest(
-  zooms.debounce(300), models,
-    (zoom, model) => model.filter(node => {
-      console.log(zs);
-      return true; // node.get("w") > 10 || node.get("fontSize");
-    })
-  ).subscribe(visibleNodes);
+  zooms.debounce(300), state$.filter(s => s.has('armies')),
+    (zoom, current) => current.get('armies')
+  ).subscribe(visibleNodes)
 
