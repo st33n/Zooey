@@ -4,9 +4,10 @@ import Rx from 'rx';
 import Immutable from 'immutable';
 import { create as spaceCreate } from './searchspace';
 import './textnodes';
-import { model, nodeSource } from './intercom';
+import { models, nodeSource } from './intercom';
 import { create as zoomCreate } from './zoom';
 import './foreign';
+import './visibility';
 
 $(() => {
   let svg = spaceCreate();
@@ -23,7 +24,7 @@ $(() => {
     { x: 300, y: 300, w: 800, h: 2000,
       wikipedia: "Spreadsheet", type: 'html' }
   ]);
-  model.onNext(m);
+  models.onNext(m);
 
   // Push something onto nodeSource every second
   /*
@@ -40,7 +41,7 @@ $(() => {
   // Whatever arrives in nodeSource is added to the model, here
   nodeSource.subscribe(node => {
     m = m.push(Immutable.fromJS(node));
-    model.onNext(m);
+    models.onNext(m);
   });
 });
 

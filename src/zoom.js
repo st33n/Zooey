@@ -1,20 +1,11 @@
 import d3 from 'd3';
 import Rx from 'rx';
-import { drags, zooms, model, visibleNodes } from './intercom';
+import { drags, zooms } from './intercom';
 import { x, y } from './searchspace';
 
 let zoom_behavior = d3.behavior.zoom();
 
 let current_translate;
-
-/** Eventstream that enriches with visibility info */
-Rx.Observable.combineLatest(
-  zooms.debounce(300), model,
-  function(zs, md) {
-    return md.filter(function(node) {
-      return true; // node.get("w") > 10 || node.get("fontSize");
-    });
-  }).subscribe(visibleNodes);
 
 export function create(svg) {
   let zb = zoom_behavior.x(x).y(y);

@@ -1,3 +1,5 @@
+import d3 from 'd3';
+import Rx from 'rx';
 import { visibleNodes, zooms } from './intercom';
 
 const color = d3.scale.category20();

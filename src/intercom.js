@@ -14,7 +14,7 @@ export const visibleNodes = new Rx.ReplaySubject(1);
 // List of listeners that are synchronously called on layout ticks
 export const tickers = [];
 
-export const model = new Rx.ReplaySubject(1);
+export const models = new Rx.ReplaySubject(1);
 
 // Push nodes here to have them added to the model
 export const nodeSource = new Rx.Subject();
@@ -23,6 +23,6 @@ textnodes.subscribe(e => { console.log("textnodes", e) });
 visual.subscribe(e => { console.log("visual", e) });
 drags.subscribe(e => { console.log("drags", e) });
 zooms.debounce(100).subscribe(e => { console.log("zooms", e) });
-model.subscribe(e => { console.log("model", e) });
+models.subscribe(e => { console.log("models", e) });
 visibleNodes.subscribe(e => { console.log("visibleNodes", e) })
 

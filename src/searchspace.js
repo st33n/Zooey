@@ -49,14 +49,19 @@ var grid = function grid(rect, gutter, c) {
 
   for (var i = 0; i < CELLS; ++i) {
     for (var j = 0; j < CELLS; ++j) {
-      layer.append("svg:rect").attr("class", c + " " + c + "-" + i + "-" + j).attr("x", rect.x + i * (dx + gutter)).attr("y", rect.y + j * (dy + gutter)).attr("width", dx).attr("height", dy);
+      layer.append("svg:rect")
+        .attr("class", c + " " + c + "-" + i + "-" + j)
+        .attr("x", rect.x + i * (dx + gutter))
+        .attr("y", rect.y + j * (dy + gutter))
+        .attr("width", dx)
+        .attr("height", dy);
     }
   }
 };
 
 export function intersectsPerson(person) {
   var rect = svg.node().createSVGRect();
-  rect.x = person.x;rect.y = person.y;
+  rect.x = person.x; rect.y = person.y;
   rect.width = IMG_WIDTH * SCALE;rect.height = IMG_HEIGHT * SCALE;
   return svg.node().getIntersectionList(rect, svg.node());
 }
