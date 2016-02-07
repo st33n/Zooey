@@ -30,12 +30,11 @@ let textBox = function(gs, text, fontSize, fill, color, radius) {
 }
 
 visibleNodes.subscribe(visibleNodes => {
-  console.log('VN', visibleNodes.toJSON())
   const g = elements().data(
     visibleNodes.filter(node => node.get('type') === 'text').toArray()
   ).enter().append('g')
       .attr('class', 'node textnode')
-      .attr('transform', d => 'translate(' + d.get('x') + ',' + d.get('y') + ')' )
+      .attr('transform', d => 'translate(' + d.get('x') + ',' + d.get('y') + ')')
 
   textBox(g,
       d => d.get('text'), d => d.get('fontSize') || '10px',
