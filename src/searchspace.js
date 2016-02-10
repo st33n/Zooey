@@ -13,7 +13,6 @@
 import d3 from 'd3'
 import $ from 'jquery'
 import _ from 'underscore'
-import Rx from 'rx'
 import { zooms } from './intercom'
 
 const SCALE = 1
@@ -33,7 +32,6 @@ const IMG_HEIGHT = 40 * SCALE
 
 export let svg
 let g_nodes
-
 let visibleRect
 
 type Point = {x: number, y: number}
@@ -108,6 +106,7 @@ export function create(): Node {
   g_nodes = svg.append('g').attr('class', 'nodes')
   g_nodes.append('g').attr('class', 'background_layer')
   g_nodes.append('g').attr('class', 'content_layer')
+  g_nodes.append('g').attr('class', 'links')
   g_nodes.append('g').attr('class', 'overlay_layer')
 
   grid({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, MARGIN, 'grid')

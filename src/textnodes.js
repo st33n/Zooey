@@ -9,7 +9,7 @@ let group = 0
 
 let elements = () => d3.select('svg g.nodes g.overlay_layer').selectAll('.textnode')
 
-let textBox = function(gs, text, fontSize, fill, color, radius) {
+let textBox = function (gs, text, fontSize, fill, color, radius) {
   const t = gs.append('svg:text')
       .style('font-size', fontSize)
       .attr('fill', color).text(text)
@@ -30,19 +30,23 @@ let textBox = function(gs, text, fontSize, fill, color, radius) {
   return t
 }
 
-visibleNodes.subscribe(visibleNodes => {
+export const enterTextNodes = (nodes) => {
   const g = elements().data(
-    visibleNodes.filter(node => node.get('type') === 'text').toArray()
+    nodes.filter(node => node.type === 'text')
   ).enter().append('g')
       .attr('class', 'node textnode')
-      .attr('transform', d => 'translate(' + d.get('x') + ',' + d.get('y') + ')')
+      .attr('transform', d => 'translate(' + d.x + ',' + d.y + ')')
 
   textBox(g,
-      d => d.get('text'), d => d.get('fontSize') || '10px',
-      'yellow', 'black', 3)
+      d => d.text, d => d.fontSize || '10px',
+      d => d.backgroundColor || 'yellow',
+      d => d.color || 'black', 3)
 
-  g.append('title').text(d => d.get('text'))
-})
+  g.append('title').text(d => d.text)
+}
+
+export const nodeTick = (force) =>
+  elements().attr('transform', d => 'translate(' + d.x + ',' + d.y + ')').call(force.drag)
 
 zooms.subscribe(event => {
   let op = (24 - (event.scale - 6)) / 24
