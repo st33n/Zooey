@@ -3,8 +3,8 @@ import Rx from 'rx'
 import $ from 'jquery'
 import _ from 'underscore'
 import { create as spaceCreate } from './searchspace'
-import { enterTextNodes, nodeTick } from './textnodes'
-import './army'
+import { enter as enterTexts, tick as textTick } from './textnodes'
+import { enter as enterPeople, tick as peopleTick } from './person'
 import { create as zoomCreate } from './zoom'
 import './visibility'
 import { force } from './layout'
@@ -12,6 +12,21 @@ import { enterLinks, linkTick } from './links'
 
 let nodes = []
 const links = []
+
+const link = (source, target, rank) => {
+  if (source && target) {
+    links.push({ source, target, rank })
+  }
+}
+
+const people = {}
+const addPerson = (person) => {
+  if (!people[person.id]) {
+    person.type = 'person'
+    people[person.id] = person
+  }
+  return people[person.id]
+}
 
 const addNodes = (ns) => {
   nodes = nodes.concat(ns)
@@ -24,20 +39,30 @@ const addNodes = (ns) => {
       type: 'text',
       text: group[0].status,
       color: 'white',
-      backgroundColor: 'blue'
+      backgroundColor: '#ff6d5a'
     }
     nodes.push(statusNode)
     group.forEach(node => {
-      links.push({ source: statusNode, target: node, rank: 1 })
+      link(statusNode, node, 1)
     })
   })
 
+  ns.forEach(conversation => {
+    link(conversation, addPerson(conversation.requester), 0)
+    conversation.comments.forEach(comment => {
+      link(conversation, addPerson(comment.author), 2)
+    })
+  })
+
+  _.values(people).forEach(p => nodes.push(p))
+
   force.nodes(nodes)
   force.links(links)
-  enterTextNodes(nodes)
+  enterTexts(nodes)
+  enterPeople(nodes)
   enterLinks(links)
 
-  force.on('tick', t => { nodeTick(force); linkTick() })
+  force.on('tick', t => { textTick(force); peopleTick(force); linkTick() })
   force.start()
 }
 
@@ -52,16 +77,16 @@ $(() => {
   zoomCreate(svg)
 
   Rx.Observable.fromPromise($.getJSON('/inbox'))
-    .flatMap(result => result.data.account.conversations)
-    .map(c => ({
-      x: 500, y: 400,
-      type: 'text',
-      id: c.id,
-      text: c.subject.substring(0, 20),
-      status: c.status,
-      fontSize: '8pt'
-    }))
-    .toArray()
-    .subscribe(ns => addNodes(ns))
+    .map(result => result.data.account.conversations)
+    .subscribe(conversations => {
+      conversations.forEach(c => {
+        c.x = 500
+        c.y = 400
+        c.type = 'text'
+        c.text = c.subject.substring(0, 25)
+        c.backgroundColor = '#bbb'
+      })
+      addNodes(conversations)
+    })
 })
 

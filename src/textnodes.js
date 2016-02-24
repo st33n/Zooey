@@ -30,7 +30,7 @@ let textBox = function (gs, text, fontSize, fill, color, radius) {
   return t
 }
 
-export const enterTextNodes = (nodes) => {
+export const enter = (nodes) => {
   const g = elements().data(
     nodes.filter(node => node.type === 'text')
   ).enter().append('g')
@@ -45,7 +45,7 @@ export const enterTextNodes = (nodes) => {
   g.append('title').text(d => d.text)
 }
 
-export const nodeTick = (force) =>
+export const tick = (force) =>
   elements().attr('transform', d => 'translate(' + d.x + ',' + d.y + ')').call(force.drag)
 
 zooms.subscribe(event => {
