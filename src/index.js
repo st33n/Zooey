@@ -10,7 +10,7 @@ import './visibility'
 import { force } from './layout'
 import { enterLinks, linkTick } from './links'
 
-let nodes = []
+const nodes = []
 const links = []
 
 const link = (source, target, rank) => {
@@ -19,42 +19,33 @@ const link = (source, target, rank) => {
   }
 }
 
-const people = {}
-const addPerson = (person) => {
-  if (!people[person.id]) {
-    person.type = 'person'
-    people[person.id] = person
+const packages = {}
+const addPackage = (name, pkg, level) => {
+  level = level || 0
+  if (!packages[name]) {
+    pkg.type = 'text'
+    pkg.text = name
+    pkg.color = 'black'
+    pkg.backgroundColor = '#ff6d5a'
+    pkg.x = 500
+    pkg.y = 200
+    if (level === 0) {
+      pkg.fixed = true
+    }
+    packages[name] = pkg
+
+    if (pkg.dependencies) {
+      Object.keys(pkg.dependencies).forEach(dep =>
+        link(pkg, addPackage(dep, pkg.dependencies[dep], level + 1), level)
+      )
+    }
   }
-  return people[person.id]
+  return packages[name]
 }
 
-const addNodes = (ns) => {
-  nodes = nodes.concat(ns)
-
-  const byStatus = _.groupBy(nodes, 'status')
-  _.values(byStatus).forEach(group => {
-    const statusNode = {
-      x: 100,
-      y: 200,
-      type: 'text',
-      text: group[0].status,
-      color: 'white',
-      backgroundColor: '#ff6d5a'
-    }
-    nodes.push(statusNode)
-    group.forEach(node => {
-      link(statusNode, node, 1)
-    })
-  })
-
-  ns.forEach(conversation => {
-    link(conversation, addPerson(conversation.requester), 0)
-    conversation.comments.forEach(comment => {
-      link(conversation, addPerson(comment.author), 2)
-    })
-  })
-
-  _.values(people).forEach(p => nodes.push(p))
+const start = () => {
+  console.log('start', nodes.length)
+  _.values(packages).forEach(p => nodes.push(p))
 
   force.nodes(nodes)
   force.links(links)
@@ -76,17 +67,14 @@ $(() => {
   let svg = spaceCreate()
   zoomCreate(svg)
 
-  Rx.Observable.fromPromise($.getJSON('/inbox'))
-    .map(result => result.data.account.conversations)
-    .subscribe(conversations => {
-      conversations.forEach(c => {
-        c.x = 500
-        c.y = 400
-        c.type = 'text'
-        c.text = c.subject.substring(0, 25)
-        c.backgroundColor = '#bbb'
-      })
-      addNodes(conversations)
-    })
+  Rx.Observable.combineLatest(
+    Rx.Observable.fromPromise($.getJSON('/data/all.json')),
+    Rx.Observable.fromPromise($.getJSON('/data/outdated.json')),
+    (all, outdated) => {
+      all.forEach(result => addPackage(result.name, result))
+      outdated.forEach(console.log)
+      start()
+    }
+  )
 })
 

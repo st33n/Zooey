@@ -31,6 +31,7 @@ let textBox = function (gs, text, fontSize, fill, color, radius) {
 }
 
 export const enter = (nodes) => {
+  console.log('enter texts', nodes.length)
   const g = elements().data(
     nodes.filter(node => node.type === 'text')
   ).enter().append('g')
@@ -48,10 +49,25 @@ export const enter = (nodes) => {
 export const tick = (force) =>
   elements().attr('transform', d => 'translate(' + d.x + ',' + d.y + ')').call(force.drag)
 
+// Resize based on scale / zoom level
+zooms.debounce(300).pluck('scale').map(
+  scale => ({
+    scale,
+    contentScale: Math.max(Math.min(1 - scale / 8, 1.2), 0.4)
+  })
+).subscribe(event => {
+  elements().selectAll('*')
+    .transition()
+    .duration(400)
+    .ease('cubic-out')
+    .attr('transform', 'scale(' + event.contentScale + ')')
+})
+
+/*
 zooms.subscribe(event => {
   let op = (24 - (event.scale - 6)) / 24
   if (op > 1) op = 1
   if (op < 0) op = 0
   elements().attr('opacity', op)
 })
-
+*/

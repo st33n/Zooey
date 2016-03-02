@@ -8,10 +8,7 @@ const port = process.env.PORT || 3000
 const app = express()
 
 app.use(express.static('public'))
-
-app.get('/inbox', (req, res) => {
-  fs.createReadStream('./support.json').pipe(res)
-})
+app.use('/data', express.static('data'))
 
 app.listen(port)
 
