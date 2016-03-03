@@ -1,4 +1,5 @@
-﻿var express = require('express');
+﻿/* @flow */
+var express = require('express');
 var request = require('request');
 
 var port = process.env.PORT || 3000;

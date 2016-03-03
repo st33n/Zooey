@@ -1,3 +1,4 @@
+/* @flow */
 import _ from 'underscore';
 import $ from 'jquery';
 import 'rx-jquery';
