@@ -1,3 +1,4 @@
+/* @flow */
 
 import Rx from 'rx'
 import $ from 'jquery'

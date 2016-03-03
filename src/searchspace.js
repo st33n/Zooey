@@ -1,3 +1,4 @@
+/* @flow */
 /*
  * D3+SVG based zoomable search interface
  *
@@ -35,12 +36,13 @@ let g_nodes
 
 let visibleRect
 
-export function screenToClient (x, y) {
-  var pt = svg.node().createSVGPoint()
+type Point = {x: number, y: number}
+
+export function screenToClient(x: number, y: number): Point {
+  const pt = svg.node().createSVGPoint()
   pt.x = x
   pt.y = y
-  var translated = pt.matrixTransform(svg.node().getScreenCTM().inverse())
-  return translated
+  return pt.matrixTransform(svg.node().getScreenCTM().inverse())
 }
 
 var grid = function grid (rect, gutter, c) {
@@ -60,12 +62,11 @@ var grid = function grid (rect, gutter, c) {
   }
 }
 
-export function intersectsPerson (person) {
-  var rect = svg.node().createSVGRect()
-  rect.x = person.x; rect.y = person.y
-  rect.width = IMG_WIDTH * SCALE
-  rect.height = IMG_HEIGHT * SCALE
-  return svg.node().getIntersectionList(rect, svg.node())
+export function intersectsPerson(person: Point): Array<Node> {
+  var rect = svg.node().createSVGRect();
+  rect.x = person.x; rect.y = person.y;
+  rect.width = IMG_WIDTH * SCALE;rect.height = IMG_HEIGHT * SCALE;
+  return svg.node().getIntersectionList(rect, svg.node());
 }
 
 _.templateSettings = {
@@ -73,7 +74,7 @@ _.templateSettings = {
 }
 
 /* Return an array of the data of nodes that intersect the screen rect */
-export function visibleData () {
+export function visibleData(): Array<Node> {
   if (!visibleRect) {
     visibleRect = svg.node().createSVGRect()
     visibleRect.x = 30
@@ -82,25 +83,25 @@ export function visibleData () {
   visibleRect.width = window.innerWidth - 60
   visibleRect.height = window.innerHeight - 60
 
-  var visibleNodes = svg.node().getIntersectionList(visibleRect, svg.node())
+  const visibleNodes = svg.node().getIntersectionList(visibleRect, svg.node())
   return $(visibleNodes).closest('.node').map(function (i, node) {
     return d3.select(node).datum()
   }).get()
 }
 
-export function startpos () {
+export function startpos(): Point {
   return {
     x: Math.random() * (WIDTH / 2) + WIDTH / 4,
     y: Math.random() * (HEIGHT / 2) + HEIGHT / 4
   }
 }
 
-export function create () {
-  svg = d3.select('#main').append('svg')
+export function create(): Node {
+  svg = d3.select("#main").append("svg");
 
-  var defs = svg.append('defs')
+  const defs = svg.append('defs')
   defs.append('clipPath').attr('id', 'circularPath').attr('clipPathUnits', 'objectBoundingBox').append('circle').attr('cx', '0.5').attr('cy', '0.5').attr('r', '0.4')
-  var gradient = defs.append('radialGradient').attr('id', 'greenGradient').attr('cx', '50%').attr('cy', '50%').attr('fx', '50%').attr('fy', '50%').attr('r', '50%')
+  const gradient = defs.append('radialGradient').attr('id', 'greenGradient').attr('cx', '50%').attr('cy', '50%').attr('fx', '50%').attr('fy', '50%').attr('r', '50%')
   gradient.append('stop').attr('stop-color', 'rgb(154, 254, 46)').attr('offset', '0%')
   gradient.append('stop').attr('stop-color', 'rgb(154, 230, 46)').attr('offset', '100%')
 
