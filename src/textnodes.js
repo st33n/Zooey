@@ -3,16 +3,15 @@ import d3 from 'd3'
 import Rx from 'rx'
 import { visibleNodes, zooms } from './intercom'
 
-const color = d3.scale.category20()
+type Data = { type: string, x: number, y: number, text: string }
+type DataFunc<T> = ((d:Data) => T) | T
 
-let group = 0
+const elements = () => d3.select('svg g.nodes g.overlay_layer').selectAll('.textnode')
 
-let elements = () => d3.select('svg g.nodes g.overlay_layer').selectAll('.textnode')
-
-let textBox = function (gs, text, fontSize, fill, color, radius) {
+const textBox = function (gs, text: DataFunc<string>, fontSize: DataFunc<string>, radius: DataFunc<number>) {
   const t = gs.append('svg:text')
       .style('font-size', fontSize)
-      .attr('fill', color).text(text)
+      .text(text)
   t.each(function (d, i) {
     let tx = d3.select(this)
     const bb = this.getBBox()
@@ -25,28 +24,23 @@ let textBox = function (gs, text, fontSize, fill, color, radius) {
         .attr('width', tw + 10)
         .attr('height', th * 1.4)
         .attr('rx', radius).attr('ry', radius)
-        .style('fill', fill)
   })
   return t
 }
 
-export const enter = (nodes) => {
-  console.log('enter texts', nodes.length)
+export const enter = (nodes: Array<Data>) => {
   const g = elements().data(
     nodes.filter(node => node.type === 'text')
   ).enter().append('g')
-      .attr('class', 'node textnode')
-      .attr('transform', d => 'translate(' + d.x + ',' + d.y + ')')
+    .attr('class', d => 'node textnode ' + (d.outdated ? 'outdated' : 'current'))
+    .attr('transform', d => 'translate(' + d.x + ',' + d.y + ')')
 
-  textBox(g,
-      d => d.text, d => d.fontSize || '10px',
-      d => d.backgroundColor || 'yellow',
-      d => d.color || 'black', 3)
+  textBox(g, d => d.text, d => d.fontSize || '10px', 3)
 
   g.append('title').text(d => d.text)
 }
 
-export const tick = (force) =>
+export const tick = (force: any): void =>
   elements().attr('transform', d => 'translate(' + d.x + ',' + d.y + ')').call(force.drag)
 
 // Resize based on scale / zoom level

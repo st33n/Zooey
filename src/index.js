@@ -26,7 +26,6 @@ const addPackage = (name, pkg, level) => {
     pkg.type = 'text'
     pkg.text = name
     pkg.color = 'black'
-    pkg.backgroundColor = '#ff6d5a'
     pkg.x = 500
     pkg.y = 200
     if (level === 0) {
@@ -64,17 +63,19 @@ Rx.Observable.interval(1000)
   .subscribe(t => { force.tick() })
 */
 $(() => {
+  console.log('launch')
   let svg = spaceCreate()
   zoomCreate(svg)
-
   Rx.Observable.combineLatest(
-    Rx.Observable.fromPromise($.getJSON('/data/all.json')),
-    Rx.Observable.fromPromise($.getJSON('/data/outdated.json')),
+    $.getJSON('/data/all.json'),
+    $.getJSON('/data/outdated.json'),
     (all, outdated) => {
-      all.forEach(result => addPackage(result.name, result))
-      outdated.forEach(console.log)
+      addPackage(all.name, all)
+      Object.keys(outdated).map(pkg => {
+        packages[pkg] && (packages[pkg].outdated = outdated[pkg])
+      })
       start()
     }
-  )
+  ).subscribe()
 })
 
