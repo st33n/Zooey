@@ -1,6 +1,6 @@
 import Rx from 'rx'
 import d3 from 'd3'
-import { state$, drags$ } from './intercom'
+import { drags$ } from './intercom'
 import { WIDTH, HEIGHT } from './searchspace'
 
 export const force = d3.layout.force()

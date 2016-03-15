@@ -3,10 +3,10 @@ import Rx from 'rx'
 import $ from 'jquery'
 import _ from 'underscore'
 import { create as spaceCreate } from './searchspace'
-import { enter as enterTexts, tick as textTick } from './textnodes'
-import { enter as enterPeople, tick as peopleTick } from './person'
+import { tick as textTick } from './textnodes'
 import { create as zoomCreate } from './zoom'
-import './visibility'
+import { state$ } from './intercom'
+import { tick as moduleTick } from './module'
 import { force } from './layout'
 import { enterLinks, linkTick } from './links'
 
@@ -19,40 +19,69 @@ const link = (source, target, rank) => {
   }
 }
 
-const packages = {}
-const addPackage = (name, pkg, level) => {
-  level = level || 0
-  if (!packages[name]) {
-    pkg.type = 'text'
-    pkg.text = name
-    pkg.color = 'black'
-    pkg.x = 500
-    pkg.y = 200
-    if (level === 0) {
-      pkg.fixed = true
-    }
-    packages[name] = pkg
+const modules = new Map()
 
-    if (pkg.dependencies) {
-      Object.keys(pkg.dependencies).forEach(dep =>
-        link(pkg, addPackage(dep, pkg.dependencies[dep], level + 1), level)
-      )
+const addParentNode = (data) => {
+  data.type = 'text'
+  data.text = 'parent'
+  data.x = 200
+  data.y = 100
+  nodes.push(data)
+  data.children.forEach((child) => {
+    addNode(child)
+    link(data, child, 1)
+  })
+}
+
+const addNode = (data) => {
+  data.type = 'text'
+  data.text = 'child'
+  data.x = 100
+  data.y = 400
+  nodes.push(data)
+  data.chunks.forEach((chunk) => {
+    addChunk(chunk)
+    link(data, chunk, 2)
+  })
+}
+
+const addChunk = (data) => {
+  data.type = 'text'
+  data.text = 'chunk: ' + data.names.join(', ')
+  data.x = 500
+  data.y = 200
+  nodes.push(data)
+  data.modules.forEach((module) => {
+    link(data, addModule(module), 3)
+  })
+}
+
+const addModule = (data) => {
+  if (!modules.has(data.id)) {
+    if (data.id < 100) {
+      data.type = 'module'
     }
+    else {
+      data.type = 'text'
+      data.text = 'module ' + data.id + ': ' + data.name
+    }
+    data.x = -200
+    data.y = -200
+    nodes.push(data)
+    modules.set(data.id, data)
   }
-  return packages[name]
+  return modules.get(data.id)
 }
 
 const start = () => {
-  console.log('start', nodes.length)
-  _.values(packages).forEach(p => nodes.push(p))
+  console.log('start', nodes.length, links.length)
 
   force.nodes(nodes)
   force.links(links)
-  enterTexts(nodes)
-  enterPeople(nodes)
   enterLinks(links)
+  state$.onNext({ nodes, links })
 
-  force.on('tick', t => { textTick(force); peopleTick(force); linkTick() })
+  force.on('tick', t => { textTick(force); linkTick(); moduleTick() })
   force.start()
 }
 
@@ -66,16 +95,10 @@ $(() => {
   console.log('launch')
   let svg = spaceCreate()
   zoomCreate(svg)
-  Rx.Observable.combineLatest(
-    $.getJSON('/data/all.json'),
-    $.getJSON('/data/outdated.json'),
-    (all, outdated) => {
-      addPackage(all.name, all)
-      Object.keys(outdated).map(pkg => {
-        packages[pkg] && (packages[pkg].outdated = outdated[pkg])
-      })
-      start()
-    }
-  ).subscribe()
+
+  $.getJSON('/data/stats.json').then((data) => {
+    addParentNode(data)
+    start()
+  })
 })
 

@@ -1,7 +1,7 @@
 /* @flow */
 import d3 from 'd3'
 import Rx from 'rx'
-import { visibleNodes, zooms } from './intercom'
+import { zooms, state$ } from './intercom'
 
 type Data = { type: string, x: number, y: number, text: string }
 type DataFunc<T> = ((d:Data) => T) | T
@@ -28,7 +28,8 @@ const textBox = function (gs, text: DataFunc<string>, fontSize: DataFunc<string>
   return t
 }
 
-export const enter = (nodes: Array<Data>) => {
+state$.subscribe((state) => {
+  const { nodes } = state
   const g = elements().data(
     nodes.filter(node => node.type === 'text')
   ).enter().append('g')
@@ -38,7 +39,7 @@ export const enter = (nodes: Array<Data>) => {
   textBox(g, d => d.text, d => d.fontSize || '10px', 3)
 
   g.append('title').text(d => d.text)
-}
+})
 
 export const tick = (force: any): void =>
   elements().attr('transform', d => 'translate(' + d.x + ',' + d.y + ')').call(force.drag)

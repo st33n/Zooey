@@ -3,14 +3,15 @@ import _ from 'underscore';
 import $ from 'jquery';
 import 'rx-jquery';
 import d3 from 'd3';
-import { visibleNodes } from './intercom';
+import { state$ } from './intercom'
 
 let elements = () => d3.select("svg g.nodes g.content_layer").selectAll(".foreignnode");
 
-visibleNodes.subscribe(visibleNodes => {
+state$.subscribe((state) => {
+  const { nodes } = state
 
   let g = elements().data(
-    visibleNodes.filter(node => node.get("type") === "html").toArray()
+    nodes.filter(node => node.get("type") === "html").toArray()
   ).enter().append("g")
       .attr("class", "node foreignnode")
       .attr("transform", d => "translate(" + d.get("x") + "," + d.get("y") + ")");
