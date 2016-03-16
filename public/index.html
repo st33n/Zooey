@@ -19,17 +19,11 @@
       .highlight {
         fill: yellow;
       }
-      .current {
-        fill: black;
+      .textnode {
+        fill: rgba(0, 0, 0, 0.6);
       }
-      .current text {
+      .textnode text {
         fill: white;
-      }
-      .outdated {
-        fill: #ff6d5a;
-      }
-      .outdated text {
-        fill: black;
       }
       line.rank0 {
         stroke-opacity: 0.8;
@@ -40,6 +34,20 @@
         stroke-opacity: 0.4;
         stroke-width: 1px;
         stroke: #ccc;
+      }
+      .module text {
+        fill: white;
+      }
+      .module .source {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #bbb;
+        background: white;
+        overflow: scroll;
+        font-size: 50%;
+      }
+      .module pre {
+        padding: 10px;
       }
     </style>
   </head>

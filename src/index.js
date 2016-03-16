@@ -40,8 +40,10 @@ const addNode = (data) => {
   data.y = 400
   nodes.push(data)
   data.chunks.forEach((chunk) => {
-    addChunk(chunk)
-    link(data, chunk, 2)
+    if (!chunk.names.join().match('node_modules')) {
+      addChunk(chunk)
+      link(data, chunk, 2)
+    }
   })
 }
 
@@ -51,20 +53,16 @@ const addChunk = (data) => {
   data.x = 500
   data.y = 200
   nodes.push(data)
-  data.modules.forEach((module) => {
-    link(data, addModule(module), 3)
+  data.modules.forEach((module, i) => {
+    if (i < 50 && !module.name.match("node_modules|locales")) {
+      link(data, addModule(module), 3)
+    }
   })
 }
 
 const addModule = (data) => {
   if (!modules.has(data.id)) {
-    if (data.id < 100) {
-      data.type = 'module'
-    }
-    else {
-      data.type = 'text'
-      data.text = 'module ' + data.id + ': ' + data.name
-    }
+    data.type = 'module'
     data.x = -200
     data.y = -200
     nodes.push(data)
