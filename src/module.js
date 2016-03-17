@@ -5,7 +5,7 @@ import Rx from 'rx';
 import 'rx-jquery';
 import d3 from 'd3';
 import { state$, zooms } from './intercom';
-import { textBox, visibleNodes } from './util';
+import { Data, textBox, visibleNodes, tickHandlerFor } from './util';
 
 const elements = () => d3.select("svg g.nodes g.content_layer").selectAll(".module");
 
@@ -46,8 +46,7 @@ const update = (state, scale: number) => {
     .remove()
 }
 
-export const tick = (force: any): void =>
-  elements().attr('transform', d => 'translate(' + d.x + ',' + d.y + ')')// .call(force.drag)
+export const tick = tickHandlerFor(elements)
 
 Rx.Observable.combineLatest(
   zooms.debounce(100), state$,

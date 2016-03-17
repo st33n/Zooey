@@ -8,41 +8,41 @@ import { create as zoomCreate } from './zoom'
 import { state$ } from './intercom'
 import { tick as moduleTick } from './module'
 import { force } from './layout'
-import { enterLinks, linkTick } from './links'
+import { link, enterLinks, tick as linkTick } from './links'
+import type { Data } from './util'
+import { setRandomPoint, WIDTH, HEIGHT } from './util'
 
-const nodes = []
-const links = []
-
-const link = (source, target, rank) => {
-  if (source && target) {
-    links.push({ source, target, rank })
-  }
-}
-
-const modules = new Map()
+const nodes: Array<Data> = []
+const modules: Map<number, Data> = new Map()
+const directory: Map<String, Array<Data>> = new Map()
 
 const addParentNode = (data) => {
   data.type = 'text'
   data.text = 'parent'
-  data.x = 200
-  data.y = 100
+  data.x = WIDTH / 2
+  data.y = HEIGHT / 2
+  data.fixed = true
   nodes.push(data)
   data.children.forEach((child) => {
     addNode(child)
-    link(data, child, 1)
+    link(data, child, 2, "CHUNK")
   })
-}
+  data.modules.forEach((module) => {
+    let m = addModule(module)
+    if (m) {
+      link(data, m, 1, "CHUNK")
+    }
+  })}
 
 const addNode = (data) => {
   data.type = 'text'
   data.text = 'child'
-  data.x = 100
-  data.y = 400
+  setRandomPoint(data)
   nodes.push(data)
   data.chunks.forEach((chunk) => {
     if (!chunk.names.join().match('node_modules')) {
       addChunk(chunk)
-      link(data, chunk, 2)
+      link(data, chunk, 2, "CHUNK")
     }
   })
 }
@@ -50,36 +50,69 @@ const addNode = (data) => {
 const addChunk = (data) => {
   data.type = 'text'
   data.text = 'chunk: ' + data.names.join(', ')
-  data.x = 500
-  data.y = 200
+  setRandomPoint(data)
   nodes.push(data)
-  data.modules.forEach((module, i) => {
-    if (i < 50 && !module.name.match("node_modules|locales")) {
-      link(data, addModule(module), 3)
+  data.modules.forEach((module) => {
+    let m = addModule(module)
+    if (m) {
+      link(data, m, 1, "CHUNK")
     }
   })
 }
 
-const addModule = (data) => {
-  if (!modules.has(data.id)) {
-    data.type = 'module'
-    data.x = -200
-    data.y = -200
-    nodes.push(data)
-    modules.set(data.id, data)
+const groups = ["src"]
+
+const groupForModuleName = (name: string): number => {
+  const g = 0
+  if (name.match("^./src/")) {
+    return groups.indexOf("src")
   }
-  return modules.get(data.id)
+  const module = name.match('^/~/(.+)/')
+  if (module) {
+    if (groups.indexOf(module[1]) === -1) {
+      groups.push(module[1])
+    }
+    return groups.indexOf(module[1])
+  }
+  console.log('unknown module name pattern', name)
+  return 1
+}
+
+const addModule = (data: Data): ?Data => {
+  if (data.id) {
+    const module = modules.get(data.id)
+    if (!module) {
+      data.type = 'module'
+      setRandomPoint(data)
+      data.group = groupForModuleName(data.name)
+      nodes.push(data)
+      modules.set(data.id, data)
+      return data
+    }
+    return module
+  }
+}
+
+const linkModules = () => {
+  for (let module of modules.entries()) {
+    const m = module[1].reasons
+    if (m !== null) {
+      m.forEach((reason) => {
+        const target: ?Data = modules.get(reason.moduleId)
+        if (target) {
+          link(module[1], target, 0, "IMPORT")
+        }
+      })
+    }
+  }
 }
 
 const start = () => {
-  console.log('start', nodes.length, links.length)
-
   force.nodes(nodes)
-  force.links(links)
-  enterLinks(links)
+  const links = enterLinks(force)
   state$.onNext({ nodes, links })
 
-  force.on('tick', t => { textTick(force); linkTick(); moduleTick() })
+  force.on('tick', t => { textTick(force); linkTick(); moduleTick(force) })
   force.start()
 }
 
@@ -90,12 +123,12 @@ Rx.Observable.interval(1000)
   .subscribe(t => { force.tick() })
 */
 $(() => {
-  console.log('launch')
   let svg = spaceCreate()
   zoomCreate(svg)
 
-  $.getJSON('/data/stats.json').then((data) => {
+  $.getJSON('/data/stats-z.json').then((data) => {
     addParentNode(data)
+    linkModules()
     start()
   })
 })

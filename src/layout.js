@@ -1,7 +1,7 @@
 import Rx from 'rx'
 import d3 from 'd3'
 import { drags$ } from './intercom'
-import { WIDTH, HEIGHT } from './searchspace'
+import { WIDTH, HEIGHT } from './util'
 
 export const force = d3.layout.force()
   .charge(-150)

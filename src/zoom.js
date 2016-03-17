@@ -1,10 +1,13 @@
 import d3 from 'd3'
 import { drags$, zooms } from './intercom'
-import { x, y } from './searchspace'
+import { WIDTH, HEIGHT } from './util'
 
 let zoom_behavior = d3.behavior.zoom()
 
 let current_translate
+
+const x = d3.scale.linear().range([0, WIDTH])
+const y = d3.scale.linear().range([0, HEIGHT])
 
 export const create = svg => {
   let zb = zoom_behavior.x(x).y(y)
