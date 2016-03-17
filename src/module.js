@@ -29,15 +29,18 @@ const update = (state, scale: number) => {
   const fo = selection.selectAll('foreignObject')
     .data(d => d.attachments.filter(a => a === 'source').map(a => d))
 
-  fo.enter().append("svg:foreignObject")
-    .attr('transform', 'scale(0) translate(-200, -300)')
-    .attr("width", 400)
-    .attr("height", 600)
-    .each(function(data) {
-      $(this).append(
-        `<div class='source'><h1>${data.name}</h1><pre>${data.source}</pre></div>`)
-    })
-    .transition().duration(500)
+  const foEnter = fo.enter()
+    .append("svg:foreignObject")
+      .attr('transform', 'scale(0) translate(-200, -300)')
+      .attr("width", 400)
+      .attr("height", 600)
+
+  // Switch to non-SVG namespace for div element
+  const div = foEnter.append(() => document.createElement("div")).attr("class", "source")
+  div.append("h1").text(d => d.name)
+  div.append("pre").text(d => d.source)
+
+  foEnter.transition().duration(500)
     .attr('transform', 'scale(0.1) translate(-200, -300)')
 
   fo.exit()
