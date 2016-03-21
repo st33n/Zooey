@@ -5,7 +5,7 @@ import Rx from 'rx';
 import 'rx-jquery';
 import d3 from 'd3';
 import { state$, zooms } from './intercom';
-import { Data, textBox, visibleNodes, tickHandlerFor } from './util';
+import { Data, textBox, visibleNodes, tickHandlerFor, color } from './util';
 
 const elements = () => d3.select("svg g.nodes g.content_layer").selectAll(".module");
 
@@ -20,9 +20,13 @@ const update = (state, scale: number) => {
 
   selection.exit().remove()
 
+  g.append('circle')
+    .attr('r', d => Math.log(d.weight + 1) * 3)
+    .attr('fill', d => color(d.group))
+
   textBox(g, d => d.name, '10px', 3)
 
-  const contentScale = Math.max(Math.min(1 - scale / 8, 0.8), 0.2)
+  const contentScale = Math.max(Math.min(1 - scale / 8, 0.7), 0.2)
   selection.selectAll('rect,text').transition().duration(400).ease('cubic-out')
     .attr('transform', `scale(${contentScale})`)
 
@@ -57,7 +61,7 @@ Rx.Observable.combineLatest(
     const { translate, scale } = z
     const visible = visibleNodes(d3.select('svg').node(), ".module")
     state.nodes.forEach((s) => { s.attachments = ["title"] })
-    if (scale > 5) {
+    if (scale > 8) {
       visible.forEach((v) => { v.attachments = ["source", "title"] })
     }
     update(state, scale)

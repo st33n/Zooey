@@ -4,11 +4,14 @@ import { drags$ } from './intercom'
 import { WIDTH, HEIGHT } from './util'
 
 export const force = d3.layout.force()
-  .charge(-150)
-  .linkDistance((link, index) => (link.rank + 1) * 40)
-  .linkStrength((link, index) => 1 / (link.rank + 1))
-  .gravity(0.03)
+  .charge(-250)
+  .chargeDistance(2000)
+  .linkDistance(60) // (link, index) => (link.rank + 1) * 40)
+  .linkStrength(1) // (link, index) => 1 / (link.rank + 1))
+  .gravity(0.1)
   .size([ WIDTH, HEIGHT ])
+
+window.force = force
 /*
 force.on('tick', () => {
   d3.selectAll('svg g.nodes .node')

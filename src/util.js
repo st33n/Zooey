@@ -4,7 +4,7 @@ import Rx from 'rx'
 import $ from 'jquery'
 import { zooms, state$ } from './intercom'
 
-const GW = 140
+const GW = 250
 const MARGIN = 1
 const GH = GW / 1.618
 const CELLS = 9
@@ -13,7 +13,7 @@ export const WIDTH = (GW + MARGIN) * CELLS - MARGIN
 export const HEIGHT = (GH + MARGIN) * CELLS - MARGIN
 export const color = d3.scale.category20()
 
-type ModuleRef = { moduleId: number }
+type ModuleRef = { moduleName: string }
 
 export interface Data {
   type: string;

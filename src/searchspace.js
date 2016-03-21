@@ -24,10 +24,23 @@ export function create(): Node {
   svg = d3.select("#main").append("svg");
 
   const defs = svg.append('defs')
-  defs.append('clipPath').attr('id', 'circularPath').attr('clipPathUnits', 'objectBoundingBox').append('circle').attr('cx', '0.5').attr('cy', '0.5').attr('r', '0.4')
-  const gradient = defs.append('radialGradient').attr('id', 'greenGradient').attr('cx', '50%').attr('cy', '50%').attr('fx', '50%').attr('fy', '50%').attr('r', '50%')
+  defs.append('clipPath')
+    .attr({'id': 'circularPath', 'clipPathUnits': 'objectBoundingBox'})
+    .append('circle').attr('cx', '0.5').attr('cy', '0.5').attr('r', '0.4')
+
+  const gradient = defs.append('radialGradient')
+    .attr({'id': 'greenGradient', 'cx': '50%', 'cy': '50%', 'fx': '50%', 'fy': '50%', 'r': '50%'})
   gradient.append('stop').attr('stop-color', 'rgb(154, 254, 46)').attr('offset', '0%')
   gradient.append('stop').attr('stop-color', 'rgb(154, 230, 46)').attr('offset', '100%')
+
+  defs.append("marker")
+    .attr({ "id":"arrow", "viewBox":"0 -5 10 10",
+            "refX":10, "refY":0,
+            "markerWidth":3, "markerHeight":6,
+            "orient":"auto"})
+    .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+      .attr("class","arrowHead")
 
   g_nodes = svg.append('g').attr('class', 'nodes')
   g_nodes.append('g').attr('class', 'background_layer')
