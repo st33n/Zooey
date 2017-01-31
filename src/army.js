@@ -1,5 +1,14 @@
 import d3 from 'd3'
+import { Map, Record } from 'immutable'
 import { visibleNodes, zooms } from './intercom'
+
+export const Army = Record({
+  type: 'army',
+  x: undefined,
+  y: undefined,
+  dest: undefined,
+  i: undefined
+})
 
 const elements = () => d3.select('svg g.nodes g.overlay_layer').selectAll('.army')
 

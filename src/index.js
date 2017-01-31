@@ -2,18 +2,23 @@
 
 import Rx from 'rx'
 import $ from 'jquery'
-import Immutable from 'immutable'
+import { Record, Map, List, fromJS } from 'immutable'
 import { create as spaceCreate } from './searchspace'
 import './textnodes'
-import './army'
+import { Army } from './army'
 import { state$, action$ } from './intercom'
 import { create as zoomCreate } from './zoom'
 import './visibility'
 
+const CreateAction = Record({
+  id: 'create',
+  data: new Map()
+})
+
 const unitCreationReducer = (state, action) => {
-  if (action.get('id') === 'create') {
+  if (action.id === 'create') {
     return state.update('units',
-      new Immutable.List(),
+      new List(),
       list => list.push(action.get('data')))
   }
   return state
@@ -22,11 +27,12 @@ const unitCreationReducer = (state, action) => {
 const SPEED = 5
 
 const moved = (unit) => {
-  const dest = unit.get('dest')
-
-  const dx = dest.get(0) - unit.get('x')
-  const dy = dest.get(1) - unit.get('y')
-
+  const dest = unit.dest
+  if (!dest) {
+    return unit
+  }
+  const dx = dest[0] - unit.x
+  const dy = dest[1] - unit.y
   console.log('move', dx, dy)
 
   if (Math.abs(dx) < 2 && Math.abs(dy) < 2) { // close enough
@@ -51,7 +57,7 @@ const moved = (unit) => {
 const movementReducer = (state, action) => {
   if (action.get('id') === 'tick') {
     return state.update('units',
-      new Immutable.List(),
+      new List(),
       list => list.map(unit => {
         if (unit.has('dest')) {
           return moved(unit)
@@ -68,24 +74,23 @@ const combineReducer = (reducers) =>
 
 // Make time go
 Rx.Observable.interval(1000)
-  .map(t => Immutable.fromJS({ id: 'tick', tick: t }))
+  .map(t => fromJS({ id: 'tick', tick: t }))
   .subscribe(action$)
 
 /* Apply our reducers to the current state and incoming events, then post the result to state$ */
 action$
-  .scan(combineReducer([movementReducer, unitCreationReducer]), Immutable.Map())
+  .scan(combineReducer([movementReducer, unitCreationReducer]), Map())
   .subscribe(state$)
 
 Rx.Observable.interval(1000, 1000)
-  .map(i => ({
-    id: 'create', data: {
+  .map(i => new CreateAction({
+    data: new Army({
       x: Math.random() * 1000,
       y: Math.random() * 800,
       dest: [500, 400],
-      type: 'army',
       i
-    }}))
-  .map(v => Immutable.fromJS(v))
+    })
+  }))
   .subscribe(action$)
 
 $(() => {

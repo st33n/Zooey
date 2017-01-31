@@ -1,5 +1,5 @@
 /* @flow */
-import _ from 'underscore';
+import _ from 'lodash';
 import $ from 'jquery';
 import 'rx-jquery';
 import d3 from 'd3';

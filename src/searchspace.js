@@ -12,7 +12,7 @@
  */
 import d3 from 'd3'
 import $ from 'jquery'
-import _ from 'underscore'
+import _ from 'lodash'
 import Rx from 'rx'
 import { zooms } from './intercom'
 
