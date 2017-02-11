@@ -4,7 +4,7 @@ import $ from 'jquery'
 import { create as spaceCreate } from './searchspace'
 import { create as zoomCreate } from './zoom'
 
-$(() => {
+document.addEventListener("DOMContentLoaded", (event) => {
   let svg = spaceCreate()
   zoomCreate(svg)
 })

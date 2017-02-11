@@ -97,20 +97,10 @@ export function startpos(): Point {
 }
 
 export function create(): Node {
-  svg = d3.select("#main").append("svg");
+  svg = d3.select("svg")
+  g_nodes = svg.select("g.nodes")
 
-  const defs = svg.append('defs')
-  defs.append('clipPath').attr('id', 'circularPath').attr('clipPathUnits', 'objectBoundingBox').append('circle').attr('cx', '0.5').attr('cy', '0.5').attr('r', '0.4')
-  const gradient = defs.append('radialGradient').attr('id', 'greenGradient').attr('cx', '50%').attr('cy', '50%').attr('fx', '50%').attr('fy', '50%').attr('r', '50%')
-  gradient.append('stop').attr('stop-color', 'rgb(154, 254, 46)').attr('offset', '0%')
-  gradient.append('stop').attr('stop-color', 'rgb(154, 230, 46)').attr('offset', '100%')
-
-  g_nodes = svg.append('g').attr('class', 'nodes')
-  g_nodes.append('g').attr('class', 'background_layer')
-  g_nodes.append('g').attr('class', 'content_layer')
-  g_nodes.append('g').attr('class', 'overlay_layer')
-
-  grid({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, MARGIN, 'grid')
+//  grid({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, MARGIN, 'grid')
 
   return svg
 }

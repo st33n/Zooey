@@ -10,6 +10,11 @@
         width: 100%;
         height: 100%;
       }
+      polygon {
+        fill: none;
+        stroke: rgba(0,0,0,0.3);
+        stroke-width: 3;
+      }
       body {
         background-color: #eee;
       }
@@ -19,16 +24,56 @@
       .highlight {
         fill: yellow;
       }
-      .story {
-        background: white;
-        border: 1px solid #ccc;
-        padding: 5px;
-      }
     </style>
   </head>
 
   <body>
     <div id="main">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+          <pattern id="tesselation" patternUnits="userSpaceOnUse" width="562.6" height="325" patternTransform="scale(.75)">
+            <g id="group">
+              <polygon points="281.4,0 375.2, 162.5 281.4, 325 187, 161.5" id="base" />
+              <g id="basetwist" >
+                <use xlink:href="#base" transform="rotate(90 280 162.5) translate(116, 67) scale(.58)" id="base_level1" />
+                <g id="diamond">
+                  <use xlink:href="#base" transform="translate(188.85, 108) scale(.33)" id="base_level2" />
+                  <g id="sidediamond">
+                    <use xlink:href="#base_level1" transform="translate(188.85, 108) scale(.33)" id="base_level3" />
+                    <use xlink:href="#base_level2" transform="translate(188.85, 108) scale(.33)" id="base_level4" />
+                    <use xlink:href="#base_level3" transform="translate(188.85, 108) scale(.33)" />
+                    <use xlink:href="#base_level4" transform="translate(188.85, 108) scale(.33)" />
+                  </g>
+                </g>
+                <use xlink:href="#sidediamond" transform="translate(62,0)" />
+                <use xlink:href="#sidediamond" transform="translate(-62,0)" />
+                <use xlink:href="#diamond" transform="translate(0,-107)" />
+                <use xlink:href="#diamond" transform="translate(0, 107)" />
+              </g>
+            </g>
+            <g id="tesselation">
+              <use xlink:href="#group" />
+              <use xlink:href="#group" transform="rotate(60 281 0)" />
+              <use xlink:href="#group" transform="rotate(-60 281 0)" />
+              <use xlink:href="#group" transform="rotate(-60 281 325)" />
+              <use xlink:href="#group" transform="rotate(60 281 325)" />
+              <g id="vert">
+                <use xlink:href="#group" transform="translate(-282, -162)" />
+                <use xlink:href="#group" transform="translate(-282, 162)" />
+              </g>
+              <use xlink:href="#vert" transform="translate(564, 0)" />
+            </g>
+          </pattern>
+        </defs>
+
+        <g class='nodes'>
+          <g class='background_layer'>
+            <rect width="100%" height="100%" fill="url(#tesselation)" />
+          </g>
+          <g class='content_layer'>
+          </g>
+        </g>
+      </svg>
     </div>
     <script src="./js/zooey.js"></script>
   </body>
