@@ -1,24 +1,16 @@
 /*
  * D3+SVG based zoomable search interface
  */
-const SCALE = 1
-const GW = 140 * SCALE
-const MARGIN = 1 * SCALE
-const GH = GW / 1.618 * SCALE
+const GW = 140
+const MARGIN = 1
+const GH = GW / 1.618
 const CELLS = 9
 
 const WIDTH = (GW + MARGIN) * CELLS - MARGIN
 const HEIGHT = (GH + MARGIN) * CELLS - MARGIN
 
-const x = d3.scaleLinear().range([0, WIDTH])
-const y = d3.scaleLinear().range([0, HEIGHT])
-
-const IMG_WIDTH = 32 * SCALE
-const IMG_HEIGHT = 40 * SCALE
-
-// Intercom
-const drags = new Rx.Subject()
-const zooms = new Rx.Subject()
+const IMG_WIDTH = 32
+const IMG_HEIGHT = 40
 
 const svg = d3.select("svg")
 const g_nodes = svg.select("g.nodes")
@@ -58,7 +50,8 @@ function grid(rect, gutter, c) {
 function intersects(o) {
   var rect = svg.node().createSVGRect();
   rect.x = o.x; rect.y = o.y;
-  rect.width = IMG_WIDTH * SCALE;rect.height = IMG_HEIGHT * SCALE;
+  rect.width = IMG_WIDTH;
+  rect.height = IMG_HEIGHT;
   return svg.node().getIntersectionList(rect, svg.node());
 }
 
@@ -77,16 +70,6 @@ function visibleData() {
     return d3.select(node).datum()
   }).get()
 }
-
-function startpos() {
-  return {
-    x: Math.random() * (WIDTH / 2) + WIDTH / 4,
-    y: Math.random() * (HEIGHT / 2) + HEIGHT / 4
-  }
-}
-
-drags.subscribe(e => { console.log('drags', e) })
-zooms.debounce(100).subscribe(e => { console.log('zooms', e) })
 
 document.addEventListener("DOMContentLoaded", () => {
   grid({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, MARGIN, 'grid')

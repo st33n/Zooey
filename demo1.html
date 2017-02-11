@@ -2,18 +2,14 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF8">
     <title>Zooey</title>
+    <script src='https://unpkg.com/@reactivex/rxjs@5.0.0/dist/global/Rx.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.js"></script>
     <style>
-      html, body, #main {
+      html, body, svg {
         height: 100%;
       }
       svg {
         width: 100%;
-        height: 100%;
-      }
-      polygon {
-        fill: none;
-        stroke: rgba(0,0,0,0.3);
-        stroke-width: 3;
       }
       body {
         background-color: #eee;
@@ -21,27 +17,20 @@
       .grid {
         fill: #fefefe;
       }
-      .highlight {
-        fill: yellow;
-      }
     </style>
   </head>
 
   <body>
-    <div id="main">
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <defs>
-        </defs>
-        <g class='nodes'>
-          <g class='background_layer'>
-          </g>
-          <g class='content_layer'>
-          </g>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+      </defs>
+      <g class='nodes'>
+        <g class='background_layer'>
         </g>
-      </svg>
-    </div>
-    <script src='https://unpkg.com/@reactivex/rxjs@5.0.0/dist/global/Rx.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.js"></script>
+        <g class='content_layer'>
+        </g>
+      </g>
+    </svg>
     <script src='js/z.js'></script>
   </body>
 
