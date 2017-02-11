@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../src/zooey.js"],"names":[],"mappings":";;;;2BACwB,aAAa;;;;sBACvB,QAAQ;;;;AAEtB,yBAAE,YAAW;AACX,2BAAY,MAAM,EAAE,CAAC;CACtB,CAAC,CAAC","file":"zooey.js","sourcesContent":["\nimport Searchspace from 'searchspace';\nimport $ from 'jquery';\n\n$(function() {\n  Searchspace.create();\n});\n\n"]}

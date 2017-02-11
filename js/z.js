@@ -1,51 +1,44 @@
-/* @flow */
 /*
  * D3+SVG based zoomable search interface
- *
- * Translate from clientX, clientY to in-svg coords:
- * var pt = svg.createSVGPoint()
- * pt.x = clientX; pt.y = clientY
- * translated = pt.matrixTransform(svg.getScreenCTM().inverse())
- *
- * source: http://stackoverflow.com/questions/10298658/mouse-position-inside-autoscaled-svg
- *
  */
-import d3 from 'd3'
-import $ from 'jquery'
-import _ from 'lodash'
-import Rx from 'rx'
-import { zooms } from './intercom'
-
 const SCALE = 1
 const GW = 140 * SCALE
 const MARGIN = 1 * SCALE
 const GH = GW / 1.618 * SCALE
 const CELLS = 9
 
-export const WIDTH = (GW + MARGIN) * CELLS - MARGIN
-export const HEIGHT = (GH + MARGIN) * CELLS - MARGIN
+const WIDTH = (GW + MARGIN) * CELLS - MARGIN
+const HEIGHT = (GH + MARGIN) * CELLS - MARGIN
 
-export const x = d3.scale.linear().range([0, WIDTH])
-export const y = d3.scale.linear().range([0, HEIGHT])
+const x = d3.scaleLinear().range([0, WIDTH])
+const y = d3.scaleLinear().range([0, HEIGHT])
 
 const IMG_WIDTH = 32 * SCALE
 const IMG_HEIGHT = 40 * SCALE
 
-export let svg
-let g_nodes
+// Intercom
+const drags = new Rx.Subject()
+const zooms = new Rx.Subject()
+
+const svg = d3.select("svg")
+const g_nodes = svg.select("g.nodes")
 
 let visibleRect
 
-type Point = {x: number, y: number}
+svg.call(d3.zoom().on('zoom', () => {
+  g_nodes.attr(
+    'transform',
+    'translate(' + d3.event.transform.x + ',' + d3.event.transform.y + ') ' + 'scale(' + d3.event.transform.k + ')')
+}))
 
-export function screenToClient(x: number, y: number): Point {
+function screenToClient(x, y) {
   const pt = svg.node().createSVGPoint()
   pt.x = x
   pt.y = y
   return pt.matrixTransform(svg.node().getScreenCTM().inverse())
 }
 
-var grid = function grid (rect, gutter, c) {
+function grid(rect, gutter, c) {
   var layer = g_nodes.select('g.background_layer')
   var dx = (rect.width - (CELLS - 1) * gutter) / CELLS
   var dy = (rect.height - (CELLS - 1) * gutter) / CELLS
@@ -62,19 +55,15 @@ var grid = function grid (rect, gutter, c) {
   }
 }
 
-export function intersectsPerson(person: Point): Array<Node> {
+function intersects(o) {
   var rect = svg.node().createSVGRect();
-  rect.x = person.x; rect.y = person.y;
+  rect.x = o.x; rect.y = o.y;
   rect.width = IMG_WIDTH * SCALE;rect.height = IMG_HEIGHT * SCALE;
   return svg.node().getIntersectionList(rect, svg.node());
 }
 
-_.templateSettings = {
-  interpolate: /\{\{(.+?)\}\}/g
-}
-
 /* Return an array of the data of nodes that intersect the screen rect */
-export function visibleData(): Array<Node> {
+function visibleData() {
   if (!visibleRect) {
     visibleRect = svg.node().createSVGRect()
     visibleRect.x = 30
@@ -89,23 +78,17 @@ export function visibleData(): Array<Node> {
   }).get()
 }
 
-export function startpos(): Point {
+function startpos() {
   return {
     x: Math.random() * (WIDTH / 2) + WIDTH / 4,
     y: Math.random() * (HEIGHT / 2) + HEIGHT / 4
   }
 }
 
-export function create(): Node {
-  svg = d3.select("svg")
-  g_nodes = svg.select("g.nodes")
+drags.subscribe(e => { console.log('drags', e) })
+zooms.debounce(100).subscribe(e => { console.log('zooms', e) })
 
-//  grid({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, MARGIN, 'grid')
-
-  return svg
-}
-
-zooms.subscribe(function (event) {
-  g_nodes.attr('transform', 'translate(' + event.translate[0] + ',' + event.translate[1] + ') ' + 'scale(' + event.scale + ')')
+document.addEventListener("DOMContentLoaded", () => {
+  grid({ x: 0, y: 0, width: WIDTH, height: HEIGHT }, MARGIN, 'grid')
 })
 
