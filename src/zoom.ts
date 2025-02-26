@@ -3,14 +3,18 @@ import Rx from 'rx';
 import { drags, zooms } from './intercom';
 import { x, y } from './searchspace';
 
-let zoom_behavior = d3.behavior.zoom();
+const zoom = d3.zoom();
 
-let current_translate;
+let current_translate: [number, number];
 
 export function create(svg) {
-  let zb = zoom_behavior.x(x).y(y);
-  zb.on("zoom", evt => { if (!current_translate) zooms.onNext(d3.event); });
-  svg.call(zb);
+  let zb = zoom.x(x).y(y);
+  zoom.on("zoom", event => {
+    if (!current_translate) {
+      zooms.onNext(event);
+    }
+  });
+  svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
 
   // Initial zoom
   zooms.onNext({ translate: [ 0, 0 ], scale: 1 });
@@ -18,11 +22,10 @@ export function create(svg) {
 
 drags.subscribe(function(d) {
   if (d.op === 'start') {
-    current_translate = [ zoom_behavior.translate()[0], zoom_behavior.translate()[1] ];
+    current_translate = [ zoom.translate()[0], zoom.translate()[1] ];
   }
   else if (d.op === 'end') {
     zoom_behavior.translate(current_translate);
     current_translate = null;
   }
 });
-

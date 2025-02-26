@@ -1,5 +1,3 @@
-/* @flow */
-
 import Rx from 'rx'
 import $ from 'jquery'
 import { Record, Map, List, fromJS } from 'immutable'
@@ -9,16 +7,17 @@ import { Army } from './army'
 import { state$, action$ } from './intercom'
 import { create as zoomCreate } from './zoom'
 import './visibility'
+import { Point } from './types'
 
 const CreateAction = Record({
   id: 'create',
-  data: new Map()
-})
+  data: Map()
+});
 
-const unitCreationReducer = (state, action) => {
+const unitCreationReducer = (state: Map<string, any>, action) => {
   if (action.id === 'create') {
     return state.update('units',
-      new List(),
+      List(),
       list => list.push(action.get('data')))
   }
   return state
@@ -26,7 +25,11 @@ const unitCreationReducer = (state, action) => {
 
 const SPEED = 5
 
-const moved = (unit) => {
+type Unit = Map<string, any> & Point & {
+  dest?: [number, number];
+}
+
+const moved = (unit: Unit): Unit => {
   const dest = unit.dest
   if (!dest) {
     return unit
@@ -117,4 +120,3 @@ $(() => {
   }).subscribe(nodeSource)
 */
 })
-
